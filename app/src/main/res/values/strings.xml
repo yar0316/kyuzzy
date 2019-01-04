@@ -6,4 +6,6 @@
     <string name="title_month">Month</string>
     <string name="title_week">Week</string>
     <string name="title_day">Day</string>
+    <string name="title_activity_registration">RegistrationActivity</string>
+    <string name="buttonRegistration">まとめて登録！</string>
 </resources>
