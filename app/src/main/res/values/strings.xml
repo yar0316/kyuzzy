@@ -8,4 +8,5 @@
     <string name="title_day">Day</string>
     <string name="title_activity_registration">RegistrationActivity</string>
     <string name="buttonRegistration">まとめて登録！</string>
+    <string name="registration_completed">登録終了</string>
 </resources>
