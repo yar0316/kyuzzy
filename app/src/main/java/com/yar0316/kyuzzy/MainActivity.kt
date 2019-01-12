@@ -4,7 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
+import com.yar0316.kyuzzy.models.EventModel
+import io.realm.Realm
+import io.realm.RealmResults
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,6 +31,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        Realm.init(this)
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
@@ -36,5 +41,23 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    /**
+     * 一括登録用イベントが登録されている日付をRealmから取得する
+     * @return 登録されている日付のリスト
+     */
+    fun getEventRegisteredDates(registeredEvents: RealmResults<EventModel>): MutableList<Calendar>{
+        val eventDates: MutableList<Calendar> = mutableListOf()
+        if (registeredEvents.size == 0){
+            return eventDates
+        }
+        registeredEvents.forEach {
+            val tmpDate: Date = it.eventDate
+            val tmpCal: Calendar = Calendar.getInstance()
+            tmpCal.time = tmpDate
+            eventDates.add(tmpCal)
+        }
+        return eventDates
     }
 }
