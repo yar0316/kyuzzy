@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity
 import com.yar0316.kyuzzy.models.EventModel
 import io.realm.Realm
 import io.realm.RealmResults
-import io.realm.kotlin.createObject
 
 import kotlinx.android.synthetic.main.activity_registration.*
 import kotlinx.android.synthetic.main.content_registration.*
@@ -29,7 +28,7 @@ class RegistrationActivity : AppCompatActivity() {
         realm = Realm.getDefaultInstance()
 
         //既に登録されているイベントをカレンダーに反映
-        registeredEvents = realm.where(EventModel::class.java).equalTo("eventDate", "Holiday").findAll()
+        registeredEvents = realm.where(EventModel::class.java).equalTo("eventTitle", "Holiday").findAll()
         calendarRegistration.selectedDates = MainActivity().getEventRegisteredDates(registeredEvents)
 
         //TODO 登録するイベントを変更(あらかじめ作って保存しておく。後回し)
@@ -60,9 +59,8 @@ class RegistrationActivity : AppCompatActivity() {
         resetDefaultEvents(selectedMonth)
         //データベースにイベントを保管
         realm.executeTransaction {
-            selectedDays.forEach {
-
-                var registEvent:EventModel = realm.createObject()
+            selectedDays.forEach {it ->
+                var registEvent:EventModel = realm.createObject(EventModel::class.java)
                 registEvent.eventDate = it.time
                 //以下暫定(TODO 後ほどRealmに追加)
                 registEvent.eventTitle = "Holiday"
