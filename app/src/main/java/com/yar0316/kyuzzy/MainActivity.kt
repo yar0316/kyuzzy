@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
+import com.applandeo.materialcalendarview.EventDay
 import com.yar0316.kyuzzy.models.EventModel
 import io.realm.Realm
 import io.realm.RealmResults
@@ -28,10 +29,17 @@ class MainActivity : AppCompatActivity() {
         false
     }
 
+    private lateinit var realm:Realm
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
         Realm.init(this)
+        realm = Realm.getDefaultInstance()
+
+        val eventsList: MutableList<EventDay> = mutableListOf()
+        val eventsRegisteredInBulk: RealmResults<EventModel> = realm.where(EventModel::class.java).equalTo("eventTitle", "Holiday").findAll()
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
@@ -40,7 +48,9 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-
+        //登録されたイベントをカレンダーに反映
+        getEventRegisteredDates(eventsRegisteredInBulk).forEach { eventsList.add(EventDay(it, R.drawable.holiday_dafault)) }
+        calendarView.setEvents(eventsList)
     }
 
     /**
