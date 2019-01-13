@@ -58,14 +58,16 @@ class RegistrationActivity : AppCompatActivity() {
         val selectedMonth: Int = selectedDays[0].get(Calendar.MONTH)
         resetDefaultEvents(selectedMonth)
         //データベースにイベントを保管
-        realm.executeTransaction {
-            selectedDays.forEach {it ->
-                var registEvent:EventModel = realm.createObject(EventModel::class.java)
-                registEvent.eventDate = it.time
-                //以下暫定(TODO 後ほどRealmに追加)
-                registEvent.eventTitle = "Holiday"
-                registEvent.eventRemark = "サンプル休日イベント"
-            }
+        selectedDays.forEach {it ->
+            var registEvent = EventModel()
+            registEvent.eventDate = it.time
+            //以下暫定(TODO 後ほどRealmに追加)
+            registEvent.eventTitle = "Holiday"
+            registEvent.eventRemark = "サンプル休日イベント"
+
+            realm.beginTransaction()
+            realm.copyToRealm(registEvent)
+            realm.commitTransaction()
         }
     }
 
@@ -76,11 +78,13 @@ class RegistrationActivity : AppCompatActivity() {
      */
     private fun resetDefaultEvents(selectedMonth: Int){
         //今回選択したイベントの月でフィルターをかけて該当のイベントを削除
+        realm.beginTransaction()
         registeredEvents.filter {
             val tmpCal:Calendar = Calendar.getInstance()
             tmpCal.time = it.eventDate
             tmpCal.get(Calendar.MONTH) == selectedMonth
         }
-        registeredEvents.forEach { it.deleteFromRealm() }
+        registeredEvents.deleteAllFromRealm()
+        realm.commitTransaction()
     }
 }
