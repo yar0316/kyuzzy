@@ -4,9 +4,10 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.BottomNavigationView
 import android.support.v7.app.AppCompatActivity
+import android.widget.Toast
 import com.applandeo.materialcalendarview.EventDay
+import com.yar0316.kyuzzy.dao.EventRegistrationDAO
 import com.yar0316.kyuzzy.models.EventModel
-import io.realm.Realm
 import io.realm.RealmResults
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
@@ -29,17 +30,14 @@ class MainActivity : AppCompatActivity() {
         false
     }
 
-    private lateinit var realm:Realm
+    private val eventRegister = EventRegistrationDAO()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        Realm.init(this)
-        realm = Realm.getDefaultInstance()
-
         val eventsList: MutableList<EventDay> = mutableListOf()
-        val eventsRegisteredInBulk: RealmResults<EventModel> = realm.where(EventModel::class.java).equalTo("eventTitle", "Holiday").findAll()
+        val eventsRegisteredInBulk: RealmResults<EventModel> = eventRegister.getEventByTitle("Holiday")
 
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
 
@@ -53,8 +51,13 @@ class MainActivity : AppCompatActivity() {
         calendarView.setEvents(eventsList)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        eventRegister.closeRealmInstance()
+    }
+
     /**
-     * 一括登録用イベントが登録されている日付をRealmから取得する
+     * 一括登録用イベントが登録されている日付一覧をRealmResultsから取得する
      * @return 登録されている日付のリスト
      */
     fun getEventRegisteredDates(registeredEvents: RealmResults<EventModel>): MutableList<Calendar>{
@@ -70,4 +73,6 @@ class MainActivity : AppCompatActivity() {
         }
         return eventDates
     }
+
+
 }
