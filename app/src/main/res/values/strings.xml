@@ -9,4 +9,16 @@
     <string name="title_activity_registration">RegistrationActivity</string>
     <string name="buttonRegistration">まとめて登録！</string>
     <string name="registration_completed">登録終了</string>
+    <string name="add_an_event">Add an Event</string>
+    <string name="event_title">Event Title</string>
+    <string name="start_time">Start Time</string>
+    <string name="finish_time">Finish Time</string>
+    <string name="text_description">Description</string>
+    <string name="text_title">Title</string>
+    <string name="hint_start_time">Start Time</string>
+    <string name="hint_finish_time">Finish Time</string>
+    <string name="hint_description">Description</string>
+    <string name="title_add_in_bulk">Add Events In Bulk</string>
+    <string name="text_cancel">Cancel</string>
+    <string name="text_complete">Complete</string>
 </resources>

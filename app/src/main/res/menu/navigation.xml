@@ -7,13 +7,10 @@
             android:title="@string/title_month"/>
 
     <item
-            android:id="@+id/navigation_week"
-            android:icon="@drawable/icon_week"
-            android:title="@string/title_week"/>
-
-    <item
             android:id="@+id/navigation_day"
             android:icon="@drawable/icon_day"
             android:title="@string/title_day"/>
+    <item android:title="@string/add_an_event" android:id="@+id/navigation_add" android:icon="@drawable/add_icon_dark"
+    />
 
 </menu>

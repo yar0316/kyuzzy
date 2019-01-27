@@ -7,6 +7,7 @@ import java.util.*
 
 /**
  * イベントの登録や取得などに関するRealmとのやりとりを管理するDAO
+ * あまりにでかくなるようなら分ける
  * @author yar0316
  */
 class EventRegistrationDAO {
