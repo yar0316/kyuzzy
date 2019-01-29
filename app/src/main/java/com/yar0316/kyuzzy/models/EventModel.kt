@@ -13,10 +13,6 @@ import java.util.*
 open class EventModel: RealmObject() {
     @Required
     var eventDate: Date = Date()
-    @Required
-    var eventTitle: String = ""
-
-    var eventRemark: String = ""
 
     var eventType = RealmList<EventTypeModel>()
 }

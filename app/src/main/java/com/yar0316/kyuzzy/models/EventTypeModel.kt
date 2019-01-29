@@ -1,13 +1,15 @@
 package com.yar0316.kyuzzy.models
 
+import io.realm.RealmObject
+
 import io.realm.annotations.Required
 
-class EventTypeModel {
+open class EventTypeModel: RealmObject() {
     @Required
-    var eventTitle: String = ""
-    @Required
-    var eventIconId: String = ""
-    @Required
+    var eventTitle: String = "Holiday"
+
+    var eventIconId: Int = 0x7f080077
+
     var eventRemark: String = ""
 
 }

@@ -1,6 +1,7 @@
 package com.yar0316.kyuzzy.dao
 
 import com.yar0316.kyuzzy.models.EventModel
+import com.yar0316.kyuzzy.models.EventTypeModel
 import io.realm.Realm
 import io.realm.RealmResults
 import java.util.*
@@ -14,38 +15,64 @@ class EventRegistrationDAO {
     companion object {
         const val EVENT_TITLE = "eventTitle"
     }
-    val realm: Realm = Realm.getDefaultInstance()
+    private  val realm: Realm = Realm.getDefaultInstance()
 
     /**
-     * イベント名からイベント一覧を取得
-     * @param fieldValue イベント名
+     * 登録されたすべてのイベントを取得
      * @return Realmから取得したイベント一覧
      */
-    fun getEventByTitle(fieldValue: String): RealmResults<EventModel>{
-        return realm.where(EventModel::class.java).equalTo(EVENT_TITLE, fieldValue).findAll()
+    fun getAllEvents(): RealmResults<EventModel>{
+        return realm.where(EventModel::class.java).findAll()
     }
+
+    /**
+     *
+     * @param eventTitle イベントのタイトル
+     * @return
+     */
+    fun getEventsByTitle(eventTitle: String): RealmResults<EventModel>{
+        val registeredEvents: RealmResults<EventModel> = getAllEvents()
+        var registeredEventType: EventTypeModel? = realm.where(EventTypeModel::class.java).equalTo(EVENT_TITLE,eventTitle).findFirst()
+        if(registeredEventType == null){
+            registeredEventType = EventTypeModel()
+        }
+        registeredEvents.filter {
+            registeredEventType.eventTitle == it.eventType[0]?.eventTitle
+        }
+        return registeredEvents
+    }
+
 
     /**
      * 選択された日付で休日イベントを登録する
      * 同月のすでに登録されているイベントは削除してから追加
      * @param selectedDays 選択された日付
      */
-     fun saveEventsOnSelectedDates(selectedDays: List<Calendar>) {
+     fun saveEventsOnSelectedDates(selectedDays: List<Calendar>, eventType: EventTypeModel) {
         //同月既に登録されてるイベントをいったん削除
         val selectedMonth: Int = selectedDays[0].get(Calendar.MONTH)
-        resetDefaultEvents(selectedMonth)
+        resetDefaultEvents(selectedMonth, eventType.eventTitle)
         //データベースにイベントを保管
         selectedDays.forEach { it ->
-            var registEvent = EventModel()
-            registEvent.eventDate = it.time
-            //以下暫定(TODO 後ほどRealmに追加)
-            registEvent.eventTitle = "Holiday"
-            registEvent.eventRemark = "サンプル休日イベント"
+            var eventToRegist = EventModel()
+            eventToRegist.eventDate = it.time
+            eventToRegist.eventType.add(eventType)
 
             realm.beginTransaction()
-            realm.copyToRealm(registEvent)
+            realm.copyToRealm(eventToRegist)
             realm.commitTransaction()
         }
+    }
+
+    fun saveEventType(eventTitle: String, eventIconId: Int, eventRemark: String){
+         val eventType = EventTypeModel()
+        eventType.eventTitle = eventTitle
+        eventType.eventIconId = eventIconId
+        eventType.eventRemark = eventRemark
+
+        realm.beginTransaction()
+        realm.copyToRealm(eventType)
+        realm.commitTransaction()
     }
 
     /**
@@ -53,8 +80,9 @@ class EventRegistrationDAO {
      * イベント登録時に、すでに登録されていたイベントをリセットする
      * @param selectedMonth 登録する月
      */
-    private fun resetDefaultEvents(selectedMonth: Int){
-        val registeredEvents: RealmResults<EventModel> = getEventByTitle("Holiday")
+    private fun resetDefaultEvents(selectedMonth: Int, eventTitle: String){
+        val registeredEvents: RealmResults<EventModel> = getEventsByTitle(eventTitle)
+
         //今回選択したイベントの月でフィルターをかけて該当のイベントを削除
         realm.beginTransaction()
         registeredEvents.filter {
